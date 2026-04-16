@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.scripts]
-siliconflow-mcp = "siliconflow_mcp.main:main"
+siliconflow_mcp = "siliconflow_mcp.main:main"
 
 [tool.uv]
 package = true

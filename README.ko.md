@@ -48,7 +48,7 @@ Claude Desktop 설정 파일(`Windows: %APPDATA%\Claude\claude_desktop_config.js
         "--directory",
         "C:/path/to/siliconflow-mcp",
         "run",
-        "siliconflow-mcp"
+        "siliconflow_mcp"
       ]
     }
   }
@@ -72,7 +72,7 @@ claude mcp add siliconflow -- uv --directory C:/path/to/siliconflow-mcp run sili
         "--directory",
         "C:/path/to/siliconflow-mcp",
         "run",
-        "siliconflow-mcp"
+        "siliconflow_mcp"
       ]
     }
   }
@@ -83,7 +83,7 @@ claude mcp add siliconflow -- uv --directory C:/path/to/siliconflow-mcp run sili
 GPT Codex 설정에서 표준 MCP 서버 형식을 따라 다음을 입력하세요:
 - **Name**: `siliconflow`
 - **Command**: `uv`
-- **Args**: `["--directory", "C:/path/to/siliconflow-mcp", "run", "siliconflow-mcp"]`
+- **Args**: `["--directory", "C:/path/to/siliconflow-mcp", "run", "siliconflow_mcp"]`
 
 *참고: `C:/path/to/siliconflow-mcp`를 실제 이 프로젝트가 설치된 절대 경로로 변경하세요.*
 

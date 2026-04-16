@@ -48,7 +48,7 @@ Add the following to your Claude Desktop configuration file (`%APPDATA%\Claude\c
         "--directory",
         "C:/path/to/siliconflow-mcp",
         "run",
-        "siliconflow-mcp"
+        "siliconflow_mcp"
       ]
     }
   }
@@ -58,7 +58,7 @@ Add the following to your Claude Desktop configuration file (`%APPDATA%\Claude\c
 #### Claude Code
 Run the following command to add the server:
 ```bash
-claude mcp add siliconflow -- uv --directory C:/path/to/siliconflow-mcp run siliconflow-mcp
+claude mcp add siliconflow -- uv --directory C:/path/to/siliconflow-mcp run siliconflow_mcp
 ```
 
 #### Gemini CLI
@@ -72,7 +72,7 @@ Add the configuration to your `settings.json` (usually located in `.gemini/setti
         "--directory",
         "C:/path/to/siliconflow-mcp",
         "run",
-        "siliconflow-mcp"
+        "siliconflow_mcp"
       ]
     }
   }
@@ -83,7 +83,7 @@ Add the configuration to your `settings.json` (usually located in `.gemini/setti
 Configure the MCP server in your GPT Codex settings following the standard MCP server format:
 - **Name**: `siliconflow`
 - **Command**: `uv`
-- **Args**: `["--directory", "C:/path/to/siliconflow-mcp", "run", "siliconflow-mcp"]`
+- **Args**: `["--directory", "C:/path/to/siliconflow-mcp", "run", "siliconflow_mcp"]`
 
 *Note: Always replace `C:/path/to/siliconflow-mcp` with the actual absolute path to this directory.*
 
@@ -94,7 +94,7 @@ Configure the MCP server in your GPT Codex settings following the standard MCP s
 uv sync
 
 # Run the server locally
-uv run siliconflow-mcp
+uv run siliconflow_mcp
 ```
 
 ## Supported Models
