@@ -15,6 +15,7 @@ SiliconFlow의 이미지 생성 서비스를 위한 MCP(Model Context Protocol) 
   - Wan-AI 모델 지원 및 다양한 화면비 선택 가능.
 - **`submit_video_generation` & `get_video_status`**: 비동기 동영상 생성을 위한 수동 제어 도구.
 - **`list_models` 도구**: SiliconFlow에서 사용 가능한 이미지 및 동영상 모델 목록을 실시간으로 가져옵니다.
+- **`get_user_info` 도구**: 잔액(총액, 유료, 무료) 및 프로필 정보를 포함한 SiliconFlow 계정 상세 정보를 확인합니다.
 - **로컬 저장 기능**: 생성된 `.png`, `.jpg`, `.mp4` 파일을 지정된 폴더에 자동으로 저장합니다.
 
 ## 설정 방법
@@ -31,8 +32,12 @@ SILICONFLOW_API_KEY=your_api_key_here
 SILICONFLOW_IMAGE_DIR=C:/path/to/save/images
 ```
 
-### 3. Claude Desktop 연동
-Claude Desktop 설정 파일(`Windows: %APPDATA%\Claude\claude_desktop_config.json`)에 다음 내용을 추가하세요:
+### 3. MCP 클라이언트 연동
+
+이 서버는 모든 MCP 호환 클라이언트에서 사용할 수 있습니다.
+
+#### Claude Desktop
+Claude Desktop 설정 파일(`Windows: %APPDATA%\Claude\claude_desktop_config.json` 또는 `macOS: ~/Library/Application Support/Claude/claude_desktop_config.json`)에 다음 내용을 추가하세요:
 
 ```json
 {
@@ -49,6 +54,37 @@ Claude Desktop 설정 파일(`Windows: %APPDATA%\Claude\claude_desktop_config.js
   }
 }
 ```
+
+#### Claude Code
+다음 명령어를 실행하여 서버를 추가합니다:
+```bash
+claude mcp add siliconflow -- uv --directory C:/path/to/siliconflow-mcp run siliconflow-mcp
+```
+
+#### Gemini CLI
+`.gemini/settings.json` 파일에 다음 설정을 추가하세요:
+```json
+{
+  "mcpServers": {
+    "siliconflow": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "C:/path/to/siliconflow-mcp",
+        "run",
+        "siliconflow-mcp"
+      ]
+    }
+  }
+}
+```
+
+#### GPT Codex
+GPT Codex 설정에서 표준 MCP 서버 형식을 따라 다음을 입력하세요:
+- **Name**: `siliconflow`
+- **Command**: `uv`
+- **Args**: `["--directory", "C:/path/to/siliconflow-mcp", "run", "siliconflow-mcp"]`
+
 *참고: `C:/path/to/siliconflow-mcp`를 실제 이 프로젝트가 설치된 절대 경로로 변경하세요.*
 
 ## 개발자 가이드

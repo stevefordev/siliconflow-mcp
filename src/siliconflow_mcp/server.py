@@ -216,6 +216,46 @@ async def generate_video(
     return f"Timeout: Video generation is still in progress (Request ID: {request_id})"
 
 @mcp.tool()
+async def get_user_info() -> str:
+    """
+    Get user account information, including credit balance and basic profile.
+    """
+    if not API_KEY:
+        return "Error: SILICONFLOW_API_KEY environment variable is not set."
+
+    headers = {"Authorization": f"Bearer {API_KEY}"}
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{API_BASE_URL}/user/info", headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("status"):
+                    user_data = data.get("data", {})
+                    user_id = user_data.get("id", "N/A")
+                    name = user_data.get("name", "N/A")
+                    email = user_data.get("email", "N/A")
+                    balance = user_data.get("balance", "N/A")
+                    charge_balance = user_data.get("chargeBalance", "N/A")
+                    total_balance = user_data.get("totalBalance", "N/A")
+                    status = user_data.get("status", "N/A")
+                    
+                    result = (
+                        f"User Info:\n"
+                        f"- ID: {user_id}\n"
+                        f"- Name: {name}\n"
+                        f"- Email: {email}\n"
+                        f"- Total Balance: $ {total_balance}\n"
+                        f"- Charge Balance (Paid): $ {charge_balance}\n"
+                        f"- Free Balance: $ {balance}\n"
+                        f"- Account Status: {status}"
+                    )
+                    return result
+                return f"Error: API returned status false. Message: {data.get('message')}"
+            return f"Error: {response.status_code} - {response.text}"
+    except Exception as e:
+        return f"Exception: {str(e)}"
+
+@mcp.tool()
 async def list_models() -> str:
     """List available image and video models from SiliconFlow."""
     if not API_KEY: return "Error: SILICONFLOW_API_KEY environment variable is not set."
