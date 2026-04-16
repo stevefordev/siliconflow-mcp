@@ -21,20 +21,37 @@ An MCP (Model Context Protocol) server for SiliconFlow's image generation servic
 ## Setup
 
 ### 1. Prerequisites
-- [uv](https://github.com/astral-sh/uv) installed (recommended).
+- [uv](https://github.com/astral-sh/uv) installed (recommended) or Python 3.10+.
 - A SiliconFlow API Key. Get one at [SiliconFlow Dashboard](https://cloud.siliconflow.com/account/ak).
 
 ### 2. Configuration
-Create a `.env` file in the project root (you can copy from `.env.example`):
+The server requires an API key to function. You can provide it via environment variables or a `.env` file.
+
 ```bash
 SILICONFLOW_API_KEY=your_api_key_here
-# Optional: Path to save generated images locally
-SILICONFLOW_IMAGE_DIR=C:/path/to/save/images
+# Optional: Path to save generated images/videos locally
+SILICONFLOW_IMAGE_DIR=C:/path/to/save/assets
 ```
 
-### 3. Usage with MCP Clients
+## Usage
 
-This server can be used with any MCP-compatible client.
+### Using with uvx (Recommended)
+You don't need to install anything locally. Just run it directly using `uvx`:
+
+```bash
+uvx siliconflow-mcp
+```
+
+### Installation via PyPI
+You can also install it as a global tool:
+
+```bash
+uv tool install siliconflow-mcp
+# or using pip
+pip install siliconflow-mcp
+```
+
+### Configuration for MCP Clients
 
 #### Claude Desktop
 Add the following to your Claude Desktop configuration file (`%APPDATA%\Claude\claude_desktop_config.json` on Windows or `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
@@ -43,22 +60,21 @@ Add the following to your Claude Desktop configuration file (`%APPDATA%\Claude\c
 {
   "mcpServers": {
     "siliconflow": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "C:/path/to/siliconflow-mcp",
-        "run",
-        "siliconflow_mcp"
-      ]
+      "command": "uvx",
+      "args": ["siliconflow-mcp"],
+      "env": {
+        "SILICONFLOW_API_KEY": "your_api_key_here",
+        "SILICONFLOW_IMAGE_DIR": "C:/path/to/save/assets"
+      }
     }
   }
 }
 ```
 
 #### Claude Code
-Run the following command to add the server:
+Run the following command:
 ```bash
-claude mcp add siliconflow -- uv --directory C:/path/to/siliconflow-mcp run siliconflow_mcp
+claude mcp add siliconflow -- uvx siliconflow-mcp
 ```
 
 #### Gemini CLI
@@ -67,27 +83,19 @@ Add the configuration to your `settings.json` (usually located in `.gemini/setti
 {
   "mcpServers": {
     "siliconflow": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "C:/path/to/siliconflow-mcp",
-        "run",
-        "siliconflow_mcp"
-      ]
+      "command": "uvx",
+      "args": ["siliconflow-mcp"],
+      "env": {
+        "SILICONFLOW_API_KEY": "your_api_key_here",
+        "SILICONFLOW_IMAGE_DIR": "C:/path/to/save/assets"
+      }
     }
   }
 }
 ```
 
-#### GPT Codex
-Configure the MCP server in your GPT Codex settings following the standard MCP server format:
-- **Name**: `siliconflow`
-- **Command**: `uv`
-- **Args**: `["--directory", "C:/path/to/siliconflow-mcp", "run", "siliconflow_mcp"]`
-
-*Note: Always replace `C:/path/to/siliconflow-mcp` with the actual absolute path to this directory.*
-
 ## Installation for Developers
+If you want to contribute or run from source:
 
 ```bash
 # Install dependencies

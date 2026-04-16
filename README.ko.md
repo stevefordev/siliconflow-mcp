@@ -21,20 +21,37 @@ SiliconFlow의 이미지 생성 서비스를 위한 MCP(Model Context Protocol) 
 ## 설정 방법
 
 ### 1. 사전 요구 사항
-- [uv](https://github.com/astral-sh/uv) 설치 권장.
+- [uv](https://github.com/astral-sh/uv) 설치 권장 또는 Python 3.10 이상.
 - SiliconFlow API 키. [SiliconFlow 대시보드](https://cloud.siliconflow.com/account/ak)에서 발급받으세요.
 
 ### 2. 환경 설정
-프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 본인의 API 키를 입력합니다 (`.env.example` 파일을 복사하여 사용할 수 있습니다):
+서버 실행을 위해 API 키가 필요합니다. 환경 변수 또는 `.env` 파일을 통해 제공할 수 있습니다.
+
 ```bash
 SILICONFLOW_API_KEY=your_api_key_here
-# 선택 사항: 생성된 이미지를 저장할 로컬 경로
-SILICONFLOW_IMAGE_DIR=C:/path/to/save/images
+# 선택 사항: 생성된 이미지/동영상을 저장할 로컬 경로
+SILICONFLOW_IMAGE_DIR=C:/path/to/save/assets
 ```
 
-### 3. MCP 클라이언트 연동
+## 사용 방법
 
-이 서버는 모든 MCP 호환 클라이언트에서 사용할 수 있습니다.
+### uvx 사용 (권장)
+별도의 설치 없이 `uvx`를 통해 즉시 실행할 수 있습니다:
+
+```bash
+uvx siliconflow-mcp
+```
+
+### PyPI를 통한 설치
+패키지를 전역 도구로 설치하여 사용할 수도 있습니다:
+
+```bash
+uv tool install siliconflow-mcp
+# 또는 pip 사용
+pip install siliconflow-mcp
+```
+
+### MCP 클라이언트 연동
 
 #### Claude Desktop
 Claude Desktop 설정 파일(`Windows: %APPDATA%\Claude\claude_desktop_config.json` 또는 `macOS: ~/Library/Application Support/Claude/claude_desktop_config.json`)에 다음 내용을 추가하세요:
@@ -43,13 +60,12 @@ Claude Desktop 설정 파일(`Windows: %APPDATA%\Claude\claude_desktop_config.js
 {
   "mcpServers": {
     "siliconflow": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "C:/path/to/siliconflow-mcp",
-        "run",
-        "siliconflow_mcp"
-      ]
+      "command": "uvx",
+      "args": ["siliconflow-mcp"],
+      "env": {
+        "SILICONFLOW_API_KEY": "your_api_key_here",
+        "SILICONFLOW_IMAGE_DIR": "C:/path/to/save/assets"
+      }
     }
   }
 }
@@ -58,7 +74,7 @@ Claude Desktop 설정 파일(`Windows: %APPDATA%\Claude\claude_desktop_config.js
 #### Claude Code
 다음 명령어를 실행하여 서버를 추가합니다:
 ```bash
-claude mcp add siliconflow -- uv --directory C:/path/to/siliconflow-mcp run siliconflow-mcp
+claude mcp add siliconflow -- uvx siliconflow-mcp
 ```
 
 #### Gemini CLI
@@ -67,27 +83,19 @@ claude mcp add siliconflow -- uv --directory C:/path/to/siliconflow-mcp run sili
 {
   "mcpServers": {
     "siliconflow": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "C:/path/to/siliconflow-mcp",
-        "run",
-        "siliconflow_mcp"
-      ]
+      "command": "uvx",
+      "args": ["siliconflow-mcp"],
+      "env": {
+        "SILICONFLOW_API_KEY": "your_api_key_here",
+        "SILICONFLOW_IMAGE_DIR": "C:/path/to/save/assets"
+      }
     }
   }
 }
 ```
 
-#### GPT Codex
-GPT Codex 설정에서 표준 MCP 서버 형식을 따라 다음을 입력하세요:
-- **Name**: `siliconflow`
-- **Command**: `uv`
-- **Args**: `["--directory", "C:/path/to/siliconflow-mcp", "run", "siliconflow_mcp"]`
-
-*참고: `C:/path/to/siliconflow-mcp`를 실제 이 프로젝트가 설치된 절대 경로로 변경하세요.*
-
 ## 개발자 가이드
+직접 기여하거나 소스 코드에서 실행하려는 경우:
 
 ```bash
 # 의존성 설치
