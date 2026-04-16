@@ -1,6 +1,6 @@
 [project]
 name = "siliconflow-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "High-quality SiliconFlow Image Generation MCP Server"
 readme = "README.md"
 authors = [
