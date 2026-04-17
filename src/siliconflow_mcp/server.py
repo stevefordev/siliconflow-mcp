@@ -1,5 +1,5 @@
 from mcp.server.fastmcp import FastMCP
-from . import images, videos, user
+from . import images, videos, user, audio
 
 # Initialize FastMCP server
 mcp = FastMCP("siliconflow-mcp")
@@ -12,6 +12,9 @@ mcp.tool()(images.edit_image)
 mcp.tool()(videos.submit_video_generation)
 mcp.tool()(videos.get_video_status)
 mcp.tool()(videos.generate_video)
+
+# Register Audio Tools
+mcp.tool()(audio.generate_speech)
 
 # Register User & Model Tools
 mcp.tool()(user.get_user_info)

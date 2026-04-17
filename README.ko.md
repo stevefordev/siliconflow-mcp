@@ -2,7 +2,10 @@
 
 [[English](README.md) | [한국어](README.ko.md)]
 
-SiliconFlow의 이미지 생성 서비스를 위한 MCP(Model Context Protocol) 서버입니다. 이 서버를 통해 Claude와 같은 AI 모델이 SiliconFlow에서 제공하는 다양한 모델을 사용하여 고품질 이미지를 직접 생성할 수 있습니다.
+SiliconFlow의 다양한 생성형 서비스를 위한 MCP(Model Context Protocol) 서버입니다. 이 서버를 통해 Claude와 같은 AI 모델이 SiliconFlow에서 제공하는 다양한 모델을 사용하여 고품질 이미지, 동영상, 음성을 직접 생성할 수 있습니다.
+
+- **서비스 홈페이지**: [SiliconFlow](https://www.siliconflow.com/)
+- **API 문서**: [SiliconFlow API Reference](https://docs.siliconflow.com/en/api-reference)
 
 ## 주요 기능
 
@@ -13,10 +16,13 @@ SiliconFlow의 이미지 생성 서비스를 위한 MCP(Model Context Protocol) 
   - 재현 가능한 생성을 위한 시드(Seed) 지원.
 - **`generate_video` 도구**: 텍스트 프롬프트를 통해 동영상을 생성합니다 (완료될 때까지 자동 확인).
   - Wan-AI 모델 지원 및 다양한 화면비 선택 가능.
+- **`generate_speech` 도구**: 텍스트를 음성으로 변환(TTS)합니다.
+  - `fish-speech`, `IndexTTS`, `CosyVoice` 모델 지원.
+  - 다양한 목소리 선택, 응답 형식(mp3, wav 등) 및 속도 조절 가능.
 - **`submit_video_generation` & `get_video_status`**: 비동기 동영상 생성을 위한 수동 제어 도구.
-- **`list_models` 도구**: SiliconFlow에서 사용 가능한 이미지 및 동영상 모델 목록을 실시간으로 가져옵니다.
+- **`list_models` 도구**: SiliconFlow에서 사용 가능한 이미지, 동영상 및 음성 모델 목록을 실시간으로 가져옵니다.
 - **`get_user_info` 도구**: 잔액(총액, 유료, 무료) 및 프로필 정보를 포함한 SiliconFlow 계정 상세 정보를 확인합니다.
-- **로컬 저장 기능**: 생성된 `.png`, `.jpg`, `.mp4` 파일을 지정된 폴더에 자동으로 저장합니다.
+- **로컬 저장 기능**: 생성된 `.png`, `.jpg`, `.mp4`, `.mp3` 파일을 지정된 폴더에 자동으로 저장합니다.
 
 ## 설정 방법
 
@@ -30,12 +36,14 @@ SiliconFlow의 이미지 생성 서비스를 위한 MCP(Model Context Protocol) 
 ```bash
 SILICONFLOW_API_KEY=your_api_key_here
 # 선택 사항: 생성된 이미지/동영상을 저장할 로컬 경로
-SILICONFLOW_IMAGE_DIR=C:/path/to/save/assets
+SILICONFLOW_IMAGE_DIR=/path/to/save/assets
+# 선택 사항: 생성된 음성 파일을 저장할 로컬 경로 (설정하지 않으면 IMAGE_DIR 사용)
+SILICONFLOW_AUDIO_DIR=/path/to/save/audio
 ```
 
 ## 사용 방법
 
-### uvx 사용 (권장)
+### uvx 사용
 별도의 설치 없이 `uvx`를 통해 즉시 실행할 수 있습니다:
 
 ```bash
@@ -64,7 +72,8 @@ Claude Desktop 설정 파일(`Windows: %APPDATA%\Claude\claude_desktop_config.js
       "args": ["siliconflow-mcp"],
       "env": {
         "SILICONFLOW_API_KEY": "your_api_key_here",
-        "SILICONFLOW_IMAGE_DIR": "C:/path/to/save/assets"
+        "SILICONFLOW_IMAGE_DIR": "/path/to/save/assets",
+        "SILICONFLOW_AUDIO_DIR": "/path/to/save/audio"
       }
     }
   }
@@ -74,11 +83,24 @@ Claude Desktop 설정 파일(`Windows: %APPDATA%\Claude\claude_desktop_config.js
 #### Claude Code
 다음 명령어를 실행하여 서버를 추가합니다:
 ```bash
-claude mcp add siliconflow -- uvx siliconflow-mcp
+claude mcp add siliconflow \
+-e SILICONFLOW_API_KEY="your_api_key_here" \
+-e SILICONFLOW_IMAGE_DIR="/path/to/save/assets" \
+-e SILICONFLOW_AUDIO_DIR="/path/to/save/audio" \
+-- uvx siliconflow-mcp
 ```
 
 #### Gemini CLI
-`.gemini/settings.json` 파일에 다음 설정을 추가하세요:
+다음 명령어를 실행하여 서버를 추가합니다:
+```bash
+gemini mcp add siliconflow \
+-e SILICONFLOW_API_KEY="your_api_key_here" \
+-e SILICONFLOW_IMAGE_DIR="/path/to/save/assets" \
+-e SILICONFLOW_AUDIO_DIR="/path/to/save/audio" \
+uvx siliconflow-mcp
+```
+
+직접 설정 : `.gemini/settings.json` 파일에 다음 설정을 추가하세요:
 ```json
 {
   "mcpServers": {
@@ -87,7 +109,8 @@ claude mcp add siliconflow -- uvx siliconflow-mcp
       "args": ["siliconflow-mcp"],
       "env": {
         "SILICONFLOW_API_KEY": "your_api_key_here",
-        "SILICONFLOW_IMAGE_DIR": "C:/path/to/save/assets"
+        "SILICONFLOW_IMAGE_DIR": "/path/to/save/assets",
+        "SILICONFLOW_AUDIO_DIR": "/path/to/save/audio"
       }
     }
   }
@@ -106,10 +129,30 @@ uv run siliconflow-mcp
 ```
 
 ## 지원 모델
+
+### 이미지 모델
 - `black-forest-labs/FLUX.1-schnell` (빠르고 효율적)
 - `black-forest-labs/FLUX.1-dev` (고품질)
-- `black-forest-labs/FLUX.2-pro` (전문가급 품질)
-- ...기타 SiliconFlow에서 호스팅하는 이미지 모델들.
+- `black-forest-labs/FLUX.1-pro` (전문가급 품질)
+- `stabilityai/stable-diffusion-3-5-large`
+- `stabilityai/stable-diffusion-3-5-large-turbo`
+- `stabilityai/stable-diffusion-xl-base-1.0`
+- `ByteDance/SDXL-Lightning`
+- `Kwai-Kolors/Kolors`
+- `Qwen/Qwen-Image-Edit-2509` (이미지 편집 전용)
+
+### 동영상 모델
+- `Wan-AI/Wan2.2-T2V-A14B` (텍스트-to-비디오)
+- `Wan-AI/Wan2.1-T2V-14B`
+- `Wan-AI/Wan2.1-I2V-14B-720P` (이미지-to-비디오)
+- `Wan-AI/Wan2.1-T2V-1.3B`
+
+### 음성 (TTS) 모델
+- `fishaudio/fish-speech-1.5`
+- `IndexTeam/IndexTTS-2`
+- `FunAudioLLM/CosyVoice2-0.5B`
+
+`list_models` 도구를 사용하여 SiliconFlow에서 제공하는 전체 모델 목록을 실시간으로 확인할 수 있습니다.
 
 ## 라이선스
 MIT

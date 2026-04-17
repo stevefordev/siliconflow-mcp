@@ -11,6 +11,7 @@ load_dotenv()
 API_BASE_URL = "https://api.siliconflow.com/v1"
 API_KEY = os.getenv("SILICONFLOW_API_KEY")
 IMAGE_DIR = os.getenv("SILICONFLOW_IMAGE_DIR")
+AUDIO_DIR = os.getenv("SILICONFLOW_AUDIO_DIR") or IMAGE_DIR
 
 # Aspect Ratio to Image Size mapping
 ASPECT_RATIOS = {
@@ -56,3 +57,19 @@ async def download_file(url: str, save_dir: str, prefix: str = "gen") -> str:
     except Exception as e:
         print(f"Failed to download file: {e}")
     return url
+
+async def save_binary_file(content: bytes, save_dir: str, extension: str = "mp3", prefix: str = "audio") -> str:
+    """Save binary content to local directory."""
+    try:
+        path = Path(save_dir)
+        path.mkdir(parents=True, exist_ok=True)
+        
+        filename = f"{prefix}_{int(time.time())}.{extension}"
+        file_path = path / filename
+        
+        with open(file_path, "wb") as f:
+            f.write(content)
+        return str(file_path.absolute())
+    except Exception as e:
+        print(f"Failed to save binary file: {e}")
+        return "Error saving file"

@@ -2,7 +2,10 @@
 
 [[English](README.md) | [한국어](README.ko.md)]
 
-An MCP (Model Context Protocol) server for SiliconFlow's image generation service. This allows AI models (like Claude) to generate high-quality images directly using various models available on SiliconFlow.
+An MCP (Model Context Protocol) server for SiliconFlow's generative services. This allows AI models (like Claude) to generate high-quality images, videos, and speech directly using various models available on SiliconFlow.
+
+- **Service**: [SiliconFlow](https://www.siliconflow.com/)
+- **API Documentation**: [SiliconFlow API Reference](https://docs.siliconflow.com/en/api-reference)
 
 ## Features
 
@@ -13,10 +16,13 @@ An MCP (Model Context Protocol) server for SiliconFlow's image generation servic
   - Customizable seeds for reproducible generations.
 - **`generate_video` tool**: Generate videos via text prompts (auto-polls until completion).
   - Supports Wan-AI models and customizable aspect ratios.
+- **`generate_speech` tool**: Generate speech (TTS) from text.
+  - Supports `fish-speech`, `IndexTTS`, and `CosyVoice` models.
+  - Customizable voices, response formats (mp3, wav, etc.), and speed.
 - **`submit_video_generation` & `get_video_status`**: Low-level tools for manual async video management.
-- **`list_models` tool**: Dynamically fetch available image and video models.
+- **`list_models` tool**: Dynamically fetch available image, video, and audio models.
 - **`get_user_info` tool**: Check your SiliconFlow account details, including balance (Total, Paid, Free) and profile info.
-- **Local Saving**: Automatically save `.png`, `.jpg`, or `.mp4` files to your specified directory.
+- **Local Saving**: Automatically save `.png`, `.jpg`, `.mp4`, or `.mp3` files to your specified directory.
 
 ## Setup
 
@@ -30,7 +36,9 @@ The server requires an API key to function. You can provide it via environment v
 ```bash
 SILICONFLOW_API_KEY=your_api_key_here
 # Optional: Path to save generated images/videos locally
-SILICONFLOW_IMAGE_DIR=C:/path/to/save/assets
+SILICONFLOW_IMAGE_DIR=/path/to/save/assets
+# Optional: Path to save generated audio files (defaults to IMAGE_DIR)
+SILICONFLOW_AUDIO_DIR=/path/to/save/audio
 ```
 
 ## Usage
@@ -64,7 +72,8 @@ Add the following to your Claude Desktop configuration file (`%APPDATA%\Claude\c
       "args": ["siliconflow-mcp"],
       "env": {
         "SILICONFLOW_API_KEY": "your_api_key_here",
-        "SILICONFLOW_IMAGE_DIR": "C:/path/to/save/assets"
+        "SILICONFLOW_IMAGE_DIR": "/path/to/save/assets",
+        "SILICONFLOW_AUDIO_DIR": "/path/to/save/audio"
       }
     }
   }
@@ -74,11 +83,24 @@ Add the following to your Claude Desktop configuration file (`%APPDATA%\Claude\c
 #### Claude Code
 Run the following command:
 ```bash
-claude mcp add siliconflow -- uvx siliconflow-mcp
+claude mcp add siliconflow \
+-e SILICONFLOW_API_KEY="your_api_key_here" \
+-e SILICONFLOW_IMAGE_DIR="/path/to/save/assets" \
+-e SILICONFLOW_AUDIO_DIR="/path/to/save/audio" \
+-- uvx siliconflow-mcp
 ```
 
 #### Gemini CLI
-Add the configuration to your `settings.json` (usually located in `.gemini/settings.json`):
+Run the following command:
+```bash
+gemini mcp add siliconflow \
+-e SILICONFLOW_API_KEY="your_api_key_here" \
+-e SILICONFLOW_IMAGE_DIR="/path/to/save/assets" \
+-e SILICONFLOW_AUDIO_DIR="/path/to/save/audio" \
+uvx siliconflow-mcp
+```
+
+Manual: Add the configuration to your `settings.json` (usually located in `.gemini/settings.json`):
 ```json
 {
   "mcpServers": {
@@ -87,7 +109,8 @@ Add the configuration to your `settings.json` (usually located in `.gemini/setti
       "args": ["siliconflow-mcp"],
       "env": {
         "SILICONFLOW_API_KEY": "your_api_key_here",
-        "SILICONFLOW_IMAGE_DIR": "C:/path/to/save/assets"
+        "SILICONFLOW_IMAGE_DIR": "/path/to/save/assets",
+        "SILICONFLOW_AUDIO_DIR": "/path/to/save/audio"
       }
     }
   }
@@ -106,10 +129,30 @@ uv run siliconflow_mcp
 ```
 
 ## Supported Models
+
+### Image Models
 - `black-forest-labs/FLUX.1-schnell` (Fast and efficient)
-- `black-forest-labs/FLUX.1-dev` (Higher quality)
-- `black-forest-labs/FLUX.2-pro` (Professional grade)
-- ...and other image models hosted on SiliconFlow.
+- `black-forest-labs/FLUX.1-dev` (High fidelity)
+- `black-forest-labs/FLUX.1-pro` (Top-tier quality)
+- `stabilityai/stable-diffusion-3-5-large`
+- `stabilityai/stable-diffusion-3-5-large-turbo`
+- `stabilityai/stable-diffusion-xl-base-1.0`
+- `ByteDance/SDXL-Lightning`
+- `Kwai-Kolors/Kolors`
+- `Qwen/Qwen-Image-Edit-2509` (Image editing)
+
+### Video Models
+- `Wan-AI/Wan2.2-T2V-A14B` (Text-to-Video)
+- `Wan-AI/Wan2.1-T2V-14B`
+- `Wan-AI/Wan2.1-I2V-14B-720P` (Image-to-Video)
+- `Wan-AI/Wan2.1-T2V-1.3B`
+
+### Audio (TTS) Models
+- `fishaudio/fish-speech-1.5`
+- `IndexTeam/IndexTTS-2`
+- `FunAudioLLM/CosyVoice2-0.5B`
+
+You can use the `list_models` tool to see the full list of available models from SiliconFlow.
 
 ## License
 MIT

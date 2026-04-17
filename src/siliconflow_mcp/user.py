@@ -41,7 +41,7 @@ async def get_user_info() -> str:
         return f"Exception: {str(e)}"
 
 async def list_models() -> str:
-    """List available image and video models from SiliconFlow."""
+    """List available image, video, and audio models from SiliconFlow."""
     if not API_KEY: return "Error: SILICONFLOW_API_KEY environment variable is not set."
     headers = {"Authorization": f"Bearer {API_KEY}"}
     try:
@@ -50,8 +50,8 @@ async def list_models() -> str:
             if response.status_code == 200:
                 data = response.json()
                 models = [m.get("id") for m in data.get("data", [])]
-                img_video_models = [m for m in models if any(x in m.lower() for x in ["flux", "stable-diffusion", "qwen-image", "kolors", "wan", "i2v", "t2v"])]
-                return "Available Models:\n" + "\n".join(img_video_models)
+                relevant_models = [m for m in models if any(x in m.lower() for x in ["flux", "stable-diffusion", "qwen-image", "kolors", "wan", "i2v", "t2v", "audio", "speech", "tts"])]
+                return "Available Models:\n" + "\n".join(relevant_models)
             return "Failed to fetch model list."
     except Exception as e:
         return f"Error: {e}"

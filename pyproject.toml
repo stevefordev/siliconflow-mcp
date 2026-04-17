@@ -1,6 +1,6 @@
 [project]
 name = "siliconflow-mcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "High-quality SiliconFlow Image Generation MCP Server"
 readme = "README.md"
 authors = [
@@ -19,6 +19,11 @@ dependencies = [
     "mcp>=1.27.0",
     "python-dotenv>=1.2.2",
 ]
+
+[project.urls]
+Homepage = "https://github.com/stevefordev/siliconflow-mcp"
+Repository = "https://github.com/stevefordev/siliconflow-mcp"
+Issues = "https://github.com/stevefordev/siliconflow-mcp/issues"
 
 [project.scripts]
 siliconflow-mcp = "siliconflow_mcp.main:main"
